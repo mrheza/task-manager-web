@@ -42,8 +42,20 @@
       </md-card-actions>
     </md-card>
 
+    <md-button
+      class="md-raised md-primary"
+      @click="uploadData"
+      :disabled="uploading"
+    >
+      Sync Data {{ countUnupload !== 0 ? `(${countUnupload})` : "" }}
+    </md-button>
+
     <br />
 
+    <md-progress-bar
+      md-mode="indeterminate"
+      v-show="progressBarStatus"
+    ></md-progress-bar>
     <md-table v-model="task" md-card>
       <md-table-toolbar>
         <h1 class="md-title">Task List</h1>
@@ -144,17 +156,18 @@ export default {
     nameForDelete: "",
     nameForUpdateStatus: "",
     statusText: "",
-    task: []
+    task: [],
+    countUnupload: 0,
+    uploading: false,
+    progressBarStatus: false
   }),
   async mounted() {
-    todo.setName("tasks");
-    this.getData();
+    todo.setName("task_manager");
+    await todo.initialize();
+    this.task = todo.data;
+    this.countUnupload = todo.countUnuploadeds();
   },
   methods: {
-    async getData() {
-      await todo.initialize();
-      this.task = todo.data;
-    },
     openUpdateStatusDialog(id) {
       this.taskId = id;
       this.confirmStatusActive = true;
@@ -171,7 +184,8 @@ export default {
     async updateStatus() {
       await todo.editItem(this.taskId, this.form);
       this.alertContent = "Task has been edited";
-      this.getData();
+      this.task = todo.data;
+      this.countUnupload = todo.countUnuploadeds();
       this.taskId = null;
       this.form = {
         title: "",
@@ -210,7 +224,8 @@ export default {
     async deleteTask() {
       todo.deleteItem(this.taskId);
       this.taskId = null;
-      this.getData();
+      this.task = todo.data;
+      this.countUnupload = todo.countUnuploadeds();
     },
     cancelDelete() {
       this.taskId = null;
@@ -225,7 +240,8 @@ export default {
           await todo.editItem(this.taskId, this.form);
           this.alertContent = "Task has been edited";
         }
-        this.getData();
+        this.task = todo.data;
+        this.countUnupload = todo.countUnuploadeds();
         this.alertActive = true;
         this.taskId = null;
         this.form = {
@@ -244,6 +260,23 @@ export default {
         tag: "",
         status: 0
       };
+    },
+    async uploadData() {
+      if (this.countUnupload !== 0) {
+        this.uploading = true;
+        this.progressBarStatus = true;
+        try {
+          await todo.upload();
+          this.alertContent = "Upload data success";
+        } catch (err) {
+          this.alertContent = "Upload data failed";
+          console.log(err.message);
+        }
+        this.alertActive = true;
+        this.uploading = false;
+        this.progressBarStatus = false;
+        this.countUnupload = todo.countUnuploadeds();
+      }
     }
   }
 };
