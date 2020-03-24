@@ -1,4 +1,5 @@
-# task-manager-web
+# Task Manager Web App
+This is task manager web app using vue, pouchdb for local database and couchdb for remote datatabse. Run on production to optimize PWA for offline first app.
 
 ## Project setup
 ```
@@ -20,7 +21,7 @@ npm run build
 npm install -g http-server-spa@1.3.0
 ```
 
-### Start production server (optimize pwa)
+### Start production server
 ```
 http-server-spa dist index.html 8080
 ```
