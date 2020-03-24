@@ -15,19 +15,14 @@ npm run serve
 npm run build
 ```
 
-### Run your tests
+### Instal http server
 ```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
+npm install -g http-server-spa@1.3.0
 ```
 
-### Run your unit tests
+### Start production server (optimize pwa)
 ```
-npm run test:unit
+http-server-spa dist index.html 8080
 ```
 
 ### Customize configuration
