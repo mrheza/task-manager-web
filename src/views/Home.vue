@@ -270,7 +270,6 @@ export default {
           this.alertContent = "Upload data success";
         } catch (err) {
           this.alertContent = "Upload data failed";
-          console.log(err.message);
         }
         this.alertActive = true;
         this.uploading = false;
